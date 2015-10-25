@@ -138,6 +138,12 @@ var_n <- round(varDice / n, 3); var_n
 # Variance of single dice roll using definition: var = E[(X - E[X])^2]
 varDice2 <- mean((1:6 - mean(1:6))^2); varDice2
 
+## FIX: "runif" refers to continuous distribution; use "sample" for discrete dist.
+avg_n <- apply(matrix(sample(1:6, nSim * n, replace = TRUE), nSim), 1, mean)
+hist(avg_n)
+mean(avg_n)
+round(var(avg_n), 3)
+
 
 ## Question 10
 # The number of web hits to a site is Poisson with mean 16.5 per day. What is the probability of getting 20 or fewer in 2 days expressed as a percentage to one decimal place?
