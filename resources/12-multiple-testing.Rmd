@@ -210,7 +210,24 @@ for(i in 1:1000){
 }
 trueStatus <- rep(c("zero","not zero"),each=500)
 table(pValues < 0.05, trueStatus)
+
+head(pValues)
+tail(pValues)
+
 ```
+
+</br>
+
+#### Table Interpretation (Joe Tue | 27 Oct, 2015)
+
+|       | not zero | zero |
+|-------|---------------------------------|----------------------------------|
+| FALSE | relationship not reported       | correctly no relationship        |
+|       | (false negative, type II error) |                                  |
+| TRUE  | correct relationship found | relationship reported despite absence |
+|       |                            | (false positive, type I error)        |
+
+Both FWER and FDR try to minimise false positives (type I error).
 
 ---
 
