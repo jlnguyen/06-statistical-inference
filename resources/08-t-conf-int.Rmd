@@ -132,6 +132,12 @@ t.test(g2, g1, paired = TRUE)
 t.test(extra ~ I(relevel(group, 2)), paired = TRUE, data = sleep)
 ```
 
+```{r, echo=TRUE}
+relevel(sleep$group, 2)
+class(I(relevel(sleep$group, 2)))
+sleep$extra ~ I(relevel(sleep$group, 2))
+```
+
 ---
 
 ## The results

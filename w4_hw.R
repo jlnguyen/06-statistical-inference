@@ -55,5 +55,21 @@ testDat
 
 
 ## Question 3
+# A sample of 100 men yielded an average PSA level of 3.0 with a sd of 1.1. What are the complete set of values that a 5% two sided Z test of H0:μ=μ0 would fail to reject the null hypothesis for? Enter lower and upper values (2dp)
+round( 3 + c(-1,1) * qnorm(0.975) * 1.1 / sqrt(100), 2 )
+round( c(qnorm(0.025, mean = 3, sd = 1.1 / sqrt(100)), qnorm(0.975, mean = 3, sd = 1.1 / sqrt(100))), 2 )
+
+
+## Question 4
+# You believe the coin that you're flipping is biased towards heads. You get 55 heads out of 100 flips.
+# 1. What's the exact relevant pvalue to 4 decimal places (expressed as a proportion)?
+# 2. Would you reject a 1 sided hypothesis at αlpha=.05? (0 for no 1 for yes)?
+pbinom(54, 100, 0.5, lower.tail = FALSE)
+
+# Can't reject null (coin is fair) since p-value = 0.1841 > 0.05
+
+
+## Question 5
 # 
+
 
