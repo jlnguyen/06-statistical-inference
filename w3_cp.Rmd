@@ -5,7 +5,7 @@ date: "25 October 2015"
 output: html_document
 ---
 
-This is the project for the statistical inference class. In it, you will use simulation to explore inference and do some simple inferential data analysis. The project consists of two parts:
+This is the project for the statistical inference class. We use simulation to explore inference and do some simple inferential data analysis. The project consists of two parts:
 
 1. A simulation exercise.
 2. Basic inferential data analysis.
@@ -13,7 +13,11 @@ This is the project for the statistical inference class. In it, you will use sim
 
 ## Simulation for Distribution of Means of Exponentials
 
+We investigate the exponential distribution in R and compare it with the Central Limit Theorem (CLT). The mean of exponential distribution is $1 / \lambda$ and the standard deviation is also $1 / \lambda$. We set $\lambda = 0.2$ for all simulations. We investigate the distribution of averages of 40 exponentials using 1000 simulations.
+
 ### Sample Mean
+
+We show the sample mean (from simulations) and compare it the theoretical mean of the distribution. In Fig. 1, the sample mean (red dashed line) is close to the theoretical mean (blue solid line).
 
 ```{r, echo=TRUE}
 set.seed(12345)
@@ -24,23 +28,75 @@ nSim <- 1000
 n <- 40
 
 # Distribution of averages of n (= 40) exponential distributions
-datExpAvg <- apply(matrix(rexp(nSim * n, lambda), nSim), 1, mean)
+datExpMn <- apply(matrix(rexp(nSim * n, lambda), nSim), 1, mean)
 
-# Histogram, sample mean, theoretical mean
-mnSample <- mean(datExpAvg)
+
+## Histogram, sample mean, theoretical mean
+mnSample <- mean(datExpMn)
 mnTheory <- 1/lambda
 
-hist(datExpAvg, main = "Distribution of Mean of 40 Exponentials",
+cat("Sample mean: ", mnSample, " vs. Theoretical mean: ", mnTheory, sep = "")
+
+hist(datExpMn, main = "Distribution of Mean of 40 Exponentials",
      xlab = "x"
 )
 abline(v = mnSample, lty = 1, lwd = 5, col = "blue")
-abline(v = mnSample, lty = 2, lwd = 5, col = "red")
+abline(v = mnTheory, lty = 2, lwd = 5, col = "red")
+
+legend("topright", legend = c("Sample Mean", "Theoretical Mean"), lty = c(1,2), lwd = 3, col = c("blue", "red"))
 ```
+
+Figure 1. Distribution of mean of 40 exponentials using 1000 simulations.
 
 
 ### Sample Variance
 
-```{r, echo=TRUE}
+We compare the sample variance to the theoretical variance ($1 / \lambda ^2$) by reporting the mean sample variance and theoretical variance, and also plotting the sample variance distribution from the simulations.
 
+```{r, echo=TRUE}
+datExpVar <- apply(matrix(rexp(nSim * n, lambda), nSim), 1, var)
+varSample <- mean(datExpVar)
+varTheory <- lambda ^ -2
+
+cat("Sample variance: ", varSample, " vs. Theoretical variance: ", varTheory, sep = "")
+
+## Histogram, sample variance, theoretical variance
+hist(datExpVar, main = "Distribution of Variance of 40 Exponentials",
+     xlab = "x"
+)
+abline(v = varSample, lty = 1, lwd = 5, col = "blue")
+abline(v = varTheory, lty = 2, lwd = 5, col = "red")
+
+legend("topright", legend = c("Sample Var", "Theoretical Var"), lty = c(1,2), lwd = 3, col = c("blue", "red"))
 
 ```
+
+
+
+### Distribution of Mean of Multiple Draws from Exponential is Approximately Normal
+
+Here, we compare the distribution of 1000 exponentials to the distribution of 1000 "averages of 40 exponentials".
+```{r, echo=TRUE}
+datSample <- data.frame(x = c(rexp(nSim), datExpMn),
+                        group = factor(rep(c(1,2), each = nSim),
+                        labels = c("Single Draw", "Average of 40 Draws"))
+                        )
+
+# Normal distribution
+x <- mnSample + sqrt(varSample) * seq(-3, 3, length = 1000)
+y <- dnorm(x)
+datNorm <- data.frame(x = x, y = y)
+
+library(ggplot2)
+g <- ggplot(datSample, aes(x)) + 
+    geom_histogram() + 
+    facet_wrap(~ group) + 
+    ggtitle("Exponential Draws Distribution")
+g + geom_line(aes(x,y), data = datNorm)
+```
+
+Figure 2. Comparison between sampling distributions with single draws and average of 40 draws from an exponential distribution.
+
+Figure 2 highlights the CLT which states that in the limit as more samples are drawn, the average of these draws approaches the mean of the underlying distribution. In this example, the mean of the underlying exponential distribution is $\frac{1}{\lambda} = \frac{1}{0.2} = 5$ and this is evident in Fig. 2 (right).
+
+
