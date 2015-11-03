@@ -1,0 +1,108 @@
+---
+title: "Inference Course Project - Part B"
+author: "Joe Nguyen"
+date: "22 Nov 2015"
+output: pdf_document
+---
+<!-- Completed on 31 Oct 2015, but submitted for 22 Nov 2015 -->
+
+In this project, we use simulation to explore inference and do some simple inferential data analysis. The project consists of two parts:
+
+- A simulation exercise
+- Basic inferential data analysis
+
+
+## B. Inference on $ToothGrowth$ Data
+
+Information about the dataset:
+
+The response is the length of odontoblasts (teeth) in each of 10 guinea pigs at each of three dose levels of Vitamin C (0.5, 1, and 2 mg) with each of two delivery methods (orange juice or ascorbic acid).
+
+
+### 1. Load the $ToothGrowth$ data
+
+Explore the dataset.
+```{r, echo=TRUE}
+data("ToothGrowth")
+str(ToothGrowth)
+rbind(head(ToothGrowth,2), tail(ToothGrowth,2))
+```
+
+
+### 2. Provide a Basic Summary of the Data
+
+```{r, echo=TRUE, fig.height=4, fig.width=8}
+summary(ToothGrowth)
+
+library(ggplot2)
+tg <- ggplot(ToothGrowth, aes(x = dose, y = len), col = supp) + 
+    geom_point(shape = 1, size = 3) + 
+    facet_wrap(~ supp)
+tg
+```
+
+Figure 1. Response (len) based on dose (0.5, 1, 2)mg and supplement type (OJ, VC) from 10 guinea pigs.
+
+
+### 3. Compare Tooth Growth
+
+Tooth growth (len) is compared by dose and supplement type (supp). T-tests are used to determine the difference between pairs of dose and the supp pair. We use t-tests because the response (len) appears to by roughly symmetric and mound shaped in Fig. 1.
+
+
+#### i. Dose
+
+First, differences in len are evaluate for pairs of dose levels = {0.5, 1, 2} mg. The data are paired by dose and so three paired t-test are performed:
+
+| t-test Index | Dose A | Dose B |
+| ------------ | ------ | ------ |
+| 1 | 0.5 | 1 |
+| 2 | 0.5 | 2 |
+| 3 | 1 | 2 |
+
+Also, group variances are assumed to be unequal as they are unknown. Assuming unequal variance results in wider confidence intervals than equal variance, which is more conservative. The 95% confidence intervals (CIs) are:
+
+```{r, echo=TRUE}
+lenDose1 <- subset(ToothGrowth, dose %in% c(0.5,1))
+lenDose2 <- subset(ToothGrowth, dose %in% c(0.5,2))
+lenDose3 <- subset(ToothGrowth, dose %in% c(1,2))
+
+rbind(
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose1)$conf,
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose2)$conf,
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose3)$conf
+)
+```
+
+As the 95% CIs are entirely below zero, these t-tests suggest the smaller doses result in less tooth growth; or, increasing the dose increases tooth growth. Additionally, the p-values are small (<< 0.05), strongly suggesting more tooth growth with higher doses.
+
+```{r, echo=TRUE}
+rbind(
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose1)$p.value,
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose2)$p.value,
+    t.test(len ~ dose, paired = TRUE, var.equal = FALSE, data = lenDose3)$p.value
+)
+```
+
+
+#### ii. Supplement
+
+Second, a paired t-test is performed to evaluate a difference in tooth growth (len) between the two supplments (supp = {OJ, VC}). Again, unequal variance is assumed to be conservative.
+
+```{r, echo=TRUE}
+t.test(len ~ supp, paired = TRUE, var.equal = FALSE, data = ToothGrowth)
+```
+
+The 95% CI = (1.409, 5.991) suggests the supplment OJ provides more tooth growth than supplment VC. This is corroborated by a small p-value = 0.00255.
+
+<!--
+t.test structure
+----------------
+t.test(Ha, H0, ...)
+
+Intepretation
+-------------
+If CI does not contain zero, it is statistically significant that we can accept Ha over H0; otherwise, we fail to reject H0. Similarly, if p-value < 0.05 (or small), accept Ha over H0.
+
+This structure holds for paired tests where the first entry can be considered the new hypothesis (Ha) for the test (new - baseline) (Ha - H0). So if CIs is negative (and p-value is large), the second entry pair is more statistically significant. 
+-->
+

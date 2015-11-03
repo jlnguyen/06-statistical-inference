@@ -78,6 +78,8 @@ sp <- sqrt( ( (n1 - 1) * s1^2 + (n2 - 1) * s2^2) / (n1 + n2 - 2) )
 # Confidence interval (independent group t CI)
 x2 - x1 + c(-1,1) * qnorm(0.975) * sp * (1/n1 + 1/n2)^.5
 x2 - x1 + c(-1,1) * qt(0.975, n1+n2-2) * sp * (1/n1 + 1/n2)^.5
+#
+# When subtracting (old - new) the interval is entirely above zero. The new system appears to be effective.
 
 
 ## Question 7
@@ -98,5 +100,6 @@ sp <- sqrt( ( (n1 - 1) * s1^2 + (n2 - 1) * s2^2) / (n1 + n2 - 2) )
 
 # Independent group t confidence interval 90%
 x1 - x2 + c(-1,1) * qt(0.95, n1+n2-2) * sp * (1/n1 + 1/n2)^.5
+x1 - x2 + c(-1,1) * qt(0.975, n1+n2-2) * sp * (1/n1 + 1/n2)^.5
 
-
+# [-5.364, -2.636]
